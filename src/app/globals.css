@@ -1,31 +1,31 @@
 @import "tailwindcss";
 
 :root {
-  --background: #FDFBF7; /* brand-paper */
-  --foreground: #1A1A1A; /* brand-ink */
+  --background: #FDFBF7; /* Page background (Warm Paper) */
+  --foreground: #1A1A1A; /* Text color (Dark Ink) */
   
   --brand-ink: #1A1A1A;
-  --brand-paper: #FDFBF7;
-  --brand-paper-dark: #F5F2EB;
+  --brand-paper: #FFFFFF; /* Card/Surface background (White Paper) */
+  --brand-paper-dark: #F5F2EB; /* Shaded/Secondary background (Shaded Paper) */
   --brand-load: #2B5B84;
   --brand-strain: #B23B3B;
   --brand-gain: #3B7A57;
 
-  --border-color: #E2E2D9;
+  --border-color: #1A1A1A; /* Premium high-contrast solid borders */
 }
 
 .dark {
-  --background: #121212;
-  --foreground: #EAEAEA;
+  --background: #0C0C0C; /* Deep page background */
+  --foreground: #EAEAEA; /* Text color */
   
   --brand-ink: #EAEAEA;
-  --brand-paper: #121212;
-  --brand-paper-dark: #1C1C1C;
+  --brand-paper: #161616; /* Card/Surface background (Elevated Carbon) */
+  --brand-paper-dark: #222222; /* Shaded/Secondary background */
   --brand-load: #4C82B5;
   --brand-strain: #D9534F;
   --brand-gain: #5CB85C;
 
-  --border-color: #2D2D2A;
+  --border-color: #EAEAEA;
 }
 
 @theme {

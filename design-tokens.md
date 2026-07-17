@@ -14,14 +14,14 @@ AuraCoach uses a structured, physical logbook/ledger aesthetic. It avoids the ty
 
 These colors are mapped directly in our Tailwind config (`src/app/globals.css`):
 
-| Token Name | Hex Value | Intent / Role |
-|---|---|---|
-| `brand-ink` | `#1A1A1A` | Dark ink color. Used for copy, borders, active weights/reps, headers. (Dark mode background: `#121212`) |
-| `brand-paper` | `#FDFBF7` | Warm, physical paper color. Light mode background. (Dark mode text/cards: `#EAEAEA`) |
-| `brand-paper-dark` | `#F5F2EB` | Shaded paper color. Used for card backgrounds, table headers, disabled fields in light mode. |
-| `brand-load` | `#2B5B84` | Steel-blue load accent. Highlight color for weights, sets, completed targets, and standard progressive overload. |
-| `brand-strain` | `#B23B3B` | Brick-red strain. **Reserved strictly** for injury states, pain reporting, warning indicators, and tapering instructions. |
-| `brand-gain` | `#3B7A57` | Olive gain. **Reserved strictly** for positive feedback: completed streaks, hit PRs, macro compliance, and injury-free resolutions. |
+| Token Name | Light Value | Dark Value | Intent / Role |
+|---|---|---|---|
+| `brand-ink` | `#1A1A1A` | `#EAEAEA` | Dark ink color for text, borders, headers, and grid lines. |
+| `brand-paper` | `#FFFFFF` | `#161616` | White Paper/Elevated Carbon. Main card container and section background. |
+| `brand-paper-dark` | `#F5F2EB` | `#222222` | Shaded Paper/Dark Shaded. Secondary block backgrounds, input fields, and logbook spine accents. |
+| `brand-load` | `#2B5B84` | `#4C82B5` | Steel-blue load accent. Reserved for active weights, progressive overload, and program loads. |
+| `brand-strain` | `#B23B3B` | `#D9534F` | Brick-red strain. **Reserved strictly** for active pain check-ins, injury flags, or near-failure load sets. |
+| `brand-gain` | `#3B7A57` | `#5CB85C` | Olive gain. **Reserved strictly** for PRs, completed compliance, and injury-free resolutions. |
 
 ---
 

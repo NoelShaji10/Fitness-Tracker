@@ -107,18 +107,18 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-brand-paper p-6 dark:bg-brand-paper">
+    <div className="flex min-h-screen flex-col bg-brand-paper-dark p-6 dark:bg-brand-paper-dark">
       {/* Header */}
-      <header className="mb-8 border-b-2 border-brand-ink pb-4 flex justify-between items-center">
+      <header className="mb-8 border-b border-brand-ink/15 pb-4 flex justify-between items-center max-w-2xl mx-auto w-full">
         <div>
-          <span className="font-mono text-xs uppercase tracking-widest text-brand-load font-bold">
+          <span className="font-sans text-[10px] uppercase tracking-widest text-brand-load font-bold">
             AURACOACH V2.0 // ONBOARDING
           </span>
-          <h1 className="font-mono text-2xl font-bold tracking-tight text-brand-ink">
+          <h1 className="font-sans text-2xl font-black tracking-tight text-brand-ink uppercase">
             INITIAL SETUP LEDGER
           </h1>
         </div>
-        <div className="font-mono text-sm border border-brand-ink px-3 py-1 bg-brand-paper-dark text-brand-ink">
+        <div className="font-mono text-xs border border-brand-ink/20 px-3 py-1.5 bg-brand-paper text-brand-ink font-bold shadow-sm">
           STEP {currentStep + 1} / 4
         </div>
       </header>
@@ -126,35 +126,35 @@ export default function OnboardingPage() {
       {/* Main Container */}
       <main className="flex-1 max-w-2xl mx-auto w-full">
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-20 border-2 border-dashed border-brand-load p-8 bg-brand-paper-dark/50">
+          <div className="flex flex-col items-center justify-center py-20 border border-brand-load bg-brand-paper p-8 shadow-sm">
             {/* Minimal Stepped Stack Loading Animation */}
             <div className="flex gap-1.5 mb-6">
               {[0, 1, 2, 3, 4].map((i) => (
                 <div
                   key={i}
-                  className="w-4 h-12 border-2 border-brand-load bg-brand-load animate-pulse"
+                  className="w-4 h-12 border border-brand-load bg-brand-load/75 animate-pulse"
                   style={{ animationDelay: `${i * 150}ms` }}
                 ></div>
               ))}
             </div>
-            <p className="font-mono text-sm text-brand-load font-bold animate-pulse">
+            <p className="font-sans text-xs text-brand-load font-bold animate-pulse uppercase tracking-wider">
               [SYSTEM] {loadingMessage}
             </p>
           </div>
         ) : (
-          <div className="border-2 border-brand-ink bg-brand-paper p-8 shadow-[4px_4px_0px_0px_rgba(26,26,26,1)] dark:border-brand-ink dark:bg-brand-paper-dark dark:shadow-[4px_4px_0px_0px_rgba(234,234,234,0.15)]">
+          <div className="border border-brand-ink/15 bg-brand-paper p-8 shadow-sm">
             {/* Step Indicators */}
             <div className="mb-8 grid grid-cols-4 gap-2">
               {STEPS.map((step, idx) => (
                 <div key={idx} className="space-y-2">
                   <div
-                    className={`h-2 border ${
+                    className={`h-1.5 border transition-colors duration-200 ${
                       idx <= currentStep
                         ? "bg-brand-load border-brand-load"
-                        : "bg-transparent border-brand-ink/20"
+                        : "bg-transparent border-brand-ink/10"
                     }`}
                   ></div>
-                  <span className="hidden sm:block font-mono text-[9px] text-brand-ink/65 leading-none">
+                  <span className="hidden sm:block font-sans text-[8px] uppercase font-bold text-brand-ink/50 leading-none tracking-wider">
                     {step}
                   </span>
                 </div>
@@ -162,7 +162,7 @@ export default function OnboardingPage() {
             </div>
 
             {error && (
-              <div className="mb-6 border-2 border-brand-strain bg-brand-strain/10 p-3 text-sm font-mono text-brand-strain">
+              <div className="mb-6 border border-brand-strain bg-brand-strain/10 p-3 text-xs font-sans text-brand-strain font-bold">
                 [ERROR]: {error}
               </div>
             )}
@@ -171,13 +171,13 @@ export default function OnboardingPage() {
               {/* STEP 1: PHYSICAL METRICS */}
               {currentStep === 0 && (
                 <div className="space-y-6">
-                  <h2 className="font-mono text-sm uppercase tracking-wider border-b border-brand-ink/20 pb-2 text-brand-ink font-bold">
+                  <h2 className="font-sans text-xs uppercase tracking-wider border-b border-brand-ink/10 pb-2 text-brand-ink font-bold">
                     01 // PHYSICAL CONSTRAINTS & METRICS
                   </h2>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
-                      <label className="block font-mono text-xs uppercase tracking-wider text-brand-ink/80 mb-2">
+                      <label className="block font-sans text-[10px] font-bold uppercase tracking-wider text-brand-ink/80 mb-2">
                         AGE (YEARS)
                       </label>
                       <input
@@ -185,18 +185,18 @@ export default function OnboardingPage() {
                         required
                         value={age}
                         onChange={(e) => setAge(Number(e.target.value))}
-                        className="w-full border-2 border-brand-ink bg-transparent px-4 py-2 font-mono text-sm text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-load"
+                        className="w-full border border-brand-ink/20 bg-brand-paper-dark px-4 py-2.5 font-mono text-sm text-brand-ink focus:outline-none focus:border-brand-load focus:ring-1 focus:ring-brand-load transition-all rounded-none"
                       />
                     </div>
 
                     <div>
-                      <label className="block font-mono text-xs uppercase tracking-wider text-brand-ink/80 mb-2">
+                      <label className="block font-sans text-[10px] font-bold uppercase tracking-wider text-brand-ink/80 mb-2">
                         GENDER BIOLOGY
                       </label>
                       <select
                         value={gender}
                         onChange={(e) => setGender(e.target.value)}
-                        className="w-full border-2 border-brand-ink bg-transparent px-4 py-2 font-mono text-sm text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-load"
+                        className="w-full border border-brand-ink/20 bg-brand-paper-dark px-4 py-2.5 font-sans text-sm text-brand-ink focus:outline-none focus:border-brand-load transition-all rounded-none cursor-pointer"
                       >
                         <option value="Male">MALE</option>
                         <option value="Female">FEMALE</option>
@@ -205,7 +205,7 @@ export default function OnboardingPage() {
                     </div>
 
                     <div>
-                      <label className="block font-mono text-xs uppercase tracking-wider text-brand-ink/80 mb-2">
+                      <label className="block font-sans text-[10px] font-bold uppercase tracking-wider text-brand-ink/80 mb-2">
                         CURRENT WEIGHT (KG)
                       </label>
                       <input
@@ -214,12 +214,12 @@ export default function OnboardingPage() {
                         required
                         value={weight}
                         onChange={(e) => setWeight(Number(e.target.value))}
-                        className="w-full border-2 border-brand-ink bg-transparent px-4 py-2 font-mono text-sm text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-load"
+                        className="w-full border border-brand-ink/20 bg-brand-paper-dark px-4 py-2.5 font-mono text-sm text-brand-ink focus:outline-none focus:border-brand-load focus:ring-1 focus:ring-brand-load transition-all rounded-none"
                       />
                     </div>
 
                     <div>
-                      <label className="block font-mono text-xs uppercase tracking-wider text-brand-ink/80 mb-2">
+                      <label className="block font-sans text-[10px] font-bold uppercase tracking-wider text-brand-ink/80 mb-2">
                         HEIGHT (CM)
                       </label>
                       <input
@@ -227,19 +227,19 @@ export default function OnboardingPage() {
                         required
                         value={height}
                         onChange={(e) => setHeight(Number(e.target.value))}
-                        className="w-full border-2 border-brand-ink bg-transparent px-4 py-2 font-mono text-sm text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-load"
+                        className="w-full border border-brand-ink/20 bg-brand-paper-dark px-4 py-2.5 font-mono text-sm text-brand-ink focus:outline-none focus:border-brand-load focus:ring-1 focus:ring-brand-load transition-all rounded-none"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block font-mono text-xs uppercase tracking-wider text-brand-ink/80 mb-2">
+                    <label className="block font-sans text-[10px] font-bold uppercase tracking-wider text-brand-ink/80 mb-2">
                       DAILY ACTIVITY COEFFICIENT
                     </label>
                     <select
                       value={activityLevel}
                       onChange={(e) => setActivityLevel(e.target.value)}
-                      className="w-full border-2 border-brand-ink bg-transparent px-4 py-2 font-mono text-sm text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-load"
+                      className="w-full border border-brand-ink/20 bg-brand-paper-dark px-4 py-2.5 font-sans text-sm text-brand-ink focus:outline-none focus:border-brand-load transition-all rounded-none cursor-pointer"
                     >
                       <option value="Sedentary">SEDENTARY (DESK JOB, NO EXERCISE)</option>
                       <option value="Light">LIGHT (1-3 DAYS LIGHT EXERCISE/WEEK)</option>
@@ -253,18 +253,18 @@ export default function OnboardingPage() {
               {/* STEP 2: GOALS & EXPERIENCES */}
               {currentStep === 1 && (
                 <div className="space-y-6">
-                  <h2 className="font-mono text-sm uppercase tracking-wider border-b border-brand-ink/20 pb-2 text-brand-ink font-bold">
+                  <h2 className="font-sans text-xs uppercase tracking-wider border-b border-brand-ink/10 pb-2 text-brand-ink font-bold">
                     02 // TARGET GOALS & EXPERIENCE PROFILE
                   </h2>
 
                   <div>
-                    <label className="block font-mono text-xs uppercase tracking-wider text-brand-ink/80 mb-2">
+                    <label className="block font-sans text-[10px] font-bold uppercase tracking-wider text-brand-ink/80 mb-2">
                       PRIMARY FITNESS PATH
                     </label>
                     <select
                       value={goal}
                       onChange={(e) => setGoal(e.target.value)}
-                      className="w-full border-2 border-brand-ink bg-transparent px-4 py-2 font-mono text-sm text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-load"
+                      className="w-full border border-brand-ink/20 bg-brand-paper-dark px-4 py-2.5 font-sans text-sm text-brand-ink focus:outline-none focus:border-brand-load transition-all rounded-none cursor-pointer"
                     >
                       <option value="Build Muscle">BUILD MUSCLE (LEAN SURPLUS)</option>
                       <option value="Fat Loss">FAT LOSS (CALORIC DEFICIT)</option>
@@ -274,13 +274,13 @@ export default function OnboardingPage() {
                   </div>
 
                   <div>
-                    <label className="block font-mono text-xs uppercase tracking-wider text-brand-ink/80 mb-2">
+                    <label className="block font-sans text-[10px] font-bold uppercase tracking-wider text-brand-ink/80 mb-2">
                       TRAINING EXPERIENCE CLASS
                     </label>
                     <select
                       value={fitnessLevel}
                       onChange={(e) => setFitnessLevel(e.target.value)}
-                      className="w-full border-2 border-brand-ink bg-transparent px-4 py-2 font-mono text-sm text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-load"
+                      className="w-full border border-brand-ink/20 bg-brand-paper-dark px-4 py-2.5 font-sans text-sm text-brand-ink focus:outline-none focus:border-brand-load transition-all rounded-none cursor-pointer"
                     >
                       <option value="Beginner">BEGINNER (0-1 YEARS STRUCTURED LIFTING)</option>
                       <option value="Intermediate">INTERMEDIATE (1-3 YEARS LIFTING)</option>
@@ -293,12 +293,12 @@ export default function OnboardingPage() {
               {/* STEP 3: SCHEDULE & EQUIPMENT */}
               {currentStep === 2 && (
                 <div className="space-y-6">
-                  <h2 className="font-mono text-sm uppercase tracking-wider border-b border-brand-ink/20 pb-2 text-brand-ink font-bold">
+                  <h2 className="font-sans text-xs uppercase tracking-wider border-b border-brand-ink/10 pb-2 text-brand-ink font-bold">
                     03 // AVAILABILITIES & EQUIPMENT LEDGER
                   </h2>
 
                   <div>
-                    <label className="block font-mono text-xs uppercase tracking-wider text-brand-ink/80 mb-2">
+                    <label className="block font-sans text-[10px] font-bold uppercase tracking-wider text-brand-ink/80 mb-2">
                       AVAILABLE EQUIPMENT INVENTORY
                     </label>
                     <input
@@ -306,16 +306,16 @@ export default function OnboardingPage() {
                       required
                       value={equipment}
                       onChange={(e) => setEquipment(e.target.value)}
-                      className="w-full border-2 border-brand-ink bg-transparent px-4 py-2 font-mono text-sm text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-load"
+                      className="w-full border border-brand-ink/20 bg-brand-paper-dark px-4 py-2.5 font-sans text-sm text-brand-ink focus:outline-none focus:border-brand-load transition-all rounded-none"
                       placeholder="e.g. Barbell, Dumbbells, Bench, Pull-up Bar"
                     />
-                    <p className="mt-1 text-xs text-brand-ink/65 font-sans">
+                    <p className="mt-1.5 text-xs text-brand-ink/65 font-sans">
                       Separate items with commas. We only prescribe movements fitting this inventory.
                     </p>
                   </div>
 
                   <div>
-                    <label className="block font-mono text-xs uppercase tracking-wider text-brand-ink/80 mb-4">
+                    <label className="block font-sans text-[10px] font-bold uppercase tracking-wider text-brand-ink/80 mb-4">
                       WEEKLY WORKOUT SCHEDULE CONSTRAINTS (CHOOSE DAYS)
                     </label>
                     <div className="grid grid-cols-7 gap-2">
@@ -326,10 +326,10 @@ export default function OnboardingPage() {
                             key={day}
                             type="button"
                             onClick={() => handleScheduleChange(day)}
-                            className={`border-2 py-3 font-mono text-xs font-bold transition-all ${
+                            className={`border py-2.5 font-sans text-xs font-bold transition-all duration-150 cursor-pointer ${
                               active
-                                ? "bg-brand-load border-brand-load text-brand-paper"
-                                : "border-brand-ink text-brand-ink bg-transparent hover:bg-brand-paper-dark"
+                                ? "bg-brand-load border-brand-load text-white"
+                                : "border-brand-ink/20 text-brand-ink/80 bg-brand-paper-dark hover:bg-brand-paper hover:border-brand-ink"
                             }`}
                           >
                             {day}
@@ -344,12 +344,12 @@ export default function OnboardingPage() {
               {/* STEP 4: DIET & INJURY HISTORY */}
               {currentStep === 3 && (
                 <div className="space-y-6">
-                  <h2 className="font-mono text-sm uppercase tracking-wider border-b border-brand-ink/20 pb-2 text-brand-ink font-bold">
+                  <h2 className="font-sans text-xs uppercase tracking-wider border-b border-brand-ink/10 pb-2 text-brand-ink font-bold">
                     04 // DIET PREFERENCES & MEDICAL HISTORY
                   </h2>
 
                   <div>
-                    <label className="block font-mono text-xs uppercase tracking-wider text-brand-ink/80 mb-2">
+                    <label className="block font-sans text-[10px] font-bold uppercase tracking-wider text-brand-ink/80 mb-2">
                       DIETARY PREFERENCES / RESTRICTIONS
                     </label>
                     <input
@@ -357,13 +357,13 @@ export default function OnboardingPage() {
                       required
                       value={diet}
                       onChange={(e) => setDiet(e.target.value)}
-                      className="w-full border-2 border-brand-ink bg-transparent px-4 py-2 font-mono text-sm text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-load"
+                      className="w-full border border-brand-ink/20 bg-brand-paper-dark px-4 py-2.5 font-sans text-sm text-brand-ink focus:outline-none focus:border-brand-load transition-all rounded-none"
                       placeholder="e.g. Vegetarian, Gluten-Free, Dairy-Free, or None"
                     />
                   </div>
 
                   <div>
-                    <label className="block font-mono text-xs uppercase tracking-wider text-brand-ink/80 mb-2">
+                    <label className="block font-sans text-[10px] font-bold uppercase tracking-wider text-brand-ink/80 mb-2">
                       INJURIES / PHYSICAL PAIN CONSTRAINTS
                     </label>
                     <input
@@ -371,10 +371,10 @@ export default function OnboardingPage() {
                       required
                       value={injuries}
                       onChange={(e) => setInjuries(e.target.value)}
-                      className="w-full border-2 border-brand-ink bg-transparent px-4 py-2 font-mono text-sm text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-load"
+                      className="w-full border border-brand-ink/20 bg-brand-paper-dark px-4 py-2.5 font-sans text-sm text-brand-ink focus:outline-none focus:border-brand-load transition-all rounded-none"
                       placeholder="e.g. Lower back pain occasionally, or None"
                     />
-                    <p className="mt-1 text-xs text-brand-ink/65 font-sans">
+                    <p className="mt-1.5 text-xs text-brand-ink/65 font-sans">
                       AuraCoach will avoid exercises that trigger pain in these areas.
                     </p>
                   </div>
@@ -382,12 +382,12 @@ export default function OnboardingPage() {
               )}
 
               {/* Controls */}
-              <div className="flex justify-between pt-6 border-t border-brand-ink/20">
+              <div className="flex justify-between pt-6 border-t border-brand-ink/10">
                 {currentStep > 0 ? (
                   <button
                     type="button"
                     onClick={handleBack}
-                    className="border-2 border-brand-ink px-6 py-2.5 font-mono text-xs uppercase tracking-wider text-brand-ink bg-transparent hover:bg-brand-paper-dark transition-all"
+                    className="border border-brand-ink/20 px-6 py-2.5 font-sans text-xs font-bold uppercase tracking-wider text-brand-ink/80 bg-brand-paper-dark hover:bg-brand-paper hover:text-brand-ink hover:border-brand-ink transition-all duration-150 cursor-pointer"
                   >
                     BACK
                   </button>
@@ -399,14 +399,14 @@ export default function OnboardingPage() {
                   <button
                     type="button"
                     onClick={handleNext}
-                    className="border-2 border-brand-ink bg-brand-ink px-6 py-2.5 font-mono text-xs uppercase tracking-wider text-brand-paper hover:bg-brand-load hover:border-brand-load transition-all"
+                    className="border border-brand-ink bg-brand-ink px-6 py-2.5 font-sans text-xs font-bold uppercase tracking-widest text-brand-paper hover:bg-brand-load hover:border-brand-load transition-all duration-150 cursor-pointer shadow-sm"
                   >
                     CONTINUE
                   </button>
                 ) : (
                   <button
                     type="submit"
-                    className="border-2 border-brand-ink bg-brand-ink px-6 py-2.5 font-mono text-xs uppercase tracking-wider text-brand-paper hover:bg-brand-load hover:border-brand-load transition-all font-bold"
+                    className="border border-brand-ink bg-brand-ink px-6 py-2.5 font-sans text-xs font-bold uppercase tracking-widest text-brand-paper hover:bg-brand-load hover:border-brand-load transition-all duration-150 font-black cursor-pointer shadow-sm animate-pulse"
                   >
                     GENERATE SYSTEM PLAN
                   </button>
