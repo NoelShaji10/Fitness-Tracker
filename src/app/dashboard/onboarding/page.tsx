@@ -1,0 +1,421 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+const STEPS = [
+  "01 // PHYSICAL METRICS",
+  "02 // GOALS & LEVEL",
+  "03 // SCHEDULE & EQUIPMENT",
+  "04 // DIET & INJURIES",
+];
+
+export default function OnboardingPage() {
+  const router = useRouter();
+  const [currentStep, setCurrentStep] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  // Form State
+  const [age, setAge] = useState<number>(28);
+  const [gender, setGender] = useState("Male");
+  const [weight, setWeight] = useState<number>(75);
+  const [height, setHeight] = useState<number>(180);
+  const [activityLevel, setActivityLevel] = useState("Moderate");
+
+  const [goal, setGoal] = useState("Build Muscle");
+  const [fitnessLevel, setFitnessLevel] = useState("Intermediate");
+
+  const [equipment, setEquipment] = useState("Barbell, Dumbbells, Bench");
+  const [schedule, setSchedule] = useState<string[]>(["MON", "WED", "FRI"]);
+
+  const [diet, setDiet] = useState("None");
+  const [injuries, setInjuries] = useState("None");
+
+  const handleNext = () => {
+    if (currentStep < STEPS.length - 1) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const handleScheduleChange = (day: string) => {
+    if (schedule.includes(day)) {
+      setSchedule(schedule.filter((d) => d !== day));
+    } else {
+      setSchedule([...schedule, day]);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    setLoadingMessage("SAVING LEDGER PROFILE...");
+
+    try {
+      // 1. Save profile
+      const profileRes = await fetch("/api/profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          goal,
+          fitnessLevel,
+          dietaryRestrictions: diet,
+          injuryHistory: injuries,
+          availableEquipment: equipment,
+          weeklySchedule: schedule,
+          weight: Number(weight),
+          height: Number(height),
+          age: Number(age),
+          gender,
+          activityLevel,
+        }),
+      });
+
+      if (!profileRes.ok) {
+        const errData = await profileRes.json();
+        throw new Error(errData.error || "Failed to save profile.");
+      }
+
+      // 2. Generate initial plan
+      setLoadingMessage("COMPILING AI WORKOUT & NUTRITION LEDGER (GEMINI API)...");
+      const planRes = await fetch("/api/plan/generate", {
+        method: "POST",
+      });
+
+      if (!planRes.ok) {
+        const errData = await planRes.json();
+        throw new Error(errData.error || "Failed to generate initial plan.");
+      }
+
+      setLoadingMessage("SYNCING PLANS TO LOCAL DATABASE...");
+      setTimeout(() => {
+        router.refresh();
+        router.push("/dashboard/workout");
+      }, 1500);
+    } catch (err: any) {
+      setError(err.message || "An error occurred.");
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen flex-col bg-brand-paper p-6 dark:bg-brand-paper">
+      {/* Header */}
+      <header className="mb-8 border-b-2 border-brand-ink pb-4 flex justify-between items-center">
+        <div>
+          <span className="font-mono text-xs uppercase tracking-widest text-brand-load font-bold">
+            AURACOACH V2.0 // ONBOARDING
+          </span>
+          <h1 className="font-mono text-2xl font-bold tracking-tight text-brand-ink">
+            INITIAL SETUP LEDGER
+          </h1>
+        </div>
+        <div className="font-mono text-sm border border-brand-ink px-3 py-1 bg-brand-paper-dark text-brand-ink">
+          STEP {currentStep + 1} / 4
+        </div>
+      </header>
+
+      {/* Main Container */}
+      <main className="flex-1 max-w-2xl mx-auto w-full">
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20 border-2 border-dashed border-brand-load p-8 bg-brand-paper-dark/50">
+            {/* Minimal Stepped Stack Loading Animation */}
+            <div className="flex gap-1.5 mb-6">
+              {[0, 1, 2, 3, 4].map((i) => (
+                <div
+                  key={i}
+                  className="w-4 h-12 border-2 border-brand-load bg-brand-load animate-pulse"
+                  style={{ animationDelay: `${i * 150}ms` }}
+                ></div>
+              ))}
+            </div>
+            <p className="font-mono text-sm text-brand-load font-bold animate-pulse">
+              [SYSTEM] {loadingMessage}
+            </p>
+          </div>
+        ) : (
+          <div className="border-2 border-brand-ink bg-brand-paper p-8 shadow-[4px_4px_0px_0px_rgba(26,26,26,1)] dark:border-brand-ink dark:bg-brand-paper-dark dark:shadow-[4px_4px_0px_0px_rgba(234,234,234,0.15)]">
+            {/* Step Indicators */}
+            <div className="mb-8 grid grid-cols-4 gap-2">
+              {STEPS.map((step, idx) => (
+                <div key={idx} className="space-y-2">
+                  <div
+                    className={`h-2 border ${
+                      idx <= currentStep
+                        ? "bg-brand-load border-brand-load"
+                        : "bg-transparent border-brand-ink/20"
+                    }`}
+                  ></div>
+                  <span className="hidden sm:block font-mono text-[9px] text-brand-ink/65 leading-none">
+                    {step}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {error && (
+              <div className="mb-6 border-2 border-brand-strain bg-brand-strain/10 p-3 text-sm font-mono text-brand-strain">
+                [ERROR]: {error}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* STEP 1: PHYSICAL METRICS */}
+              {currentStep === 0 && (
+                <div className="space-y-6">
+                  <h2 className="font-mono text-sm uppercase tracking-wider border-b border-brand-ink/20 pb-2 text-brand-ink font-bold">
+                    01 // PHYSICAL CONSTRAINTS & METRICS
+                  </h2>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block font-mono text-xs uppercase tracking-wider text-brand-ink/80 mb-2">
+                        AGE (YEARS)
+                      </label>
+                      <input
+                        type="number"
+                        required
+                        value={age}
+                        onChange={(e) => setAge(Number(e.target.value))}
+                        className="w-full border-2 border-brand-ink bg-transparent px-4 py-2 font-mono text-sm text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-load"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-mono text-xs uppercase tracking-wider text-brand-ink/80 mb-2">
+                        GENDER BIOLOGY
+                      </label>
+                      <select
+                        value={gender}
+                        onChange={(e) => setGender(e.target.value)}
+                        className="w-full border-2 border-brand-ink bg-transparent px-4 py-2 font-mono text-sm text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-load"
+                      >
+                        <option value="Male">MALE</option>
+                        <option value="Female">FEMALE</option>
+                        <option value="Other">OTHER</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block font-mono text-xs uppercase tracking-wider text-brand-ink/80 mb-2">
+                        CURRENT WEIGHT (KG)
+                      </label>
+                      <input
+                        type="number"
+                        step="0.1"
+                        required
+                        value={weight}
+                        onChange={(e) => setWeight(Number(e.target.value))}
+                        className="w-full border-2 border-brand-ink bg-transparent px-4 py-2 font-mono text-sm text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-load"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-mono text-xs uppercase tracking-wider text-brand-ink/80 mb-2">
+                        HEIGHT (CM)
+                      </label>
+                      <input
+                        type="number"
+                        required
+                        value={height}
+                        onChange={(e) => setHeight(Number(e.target.value))}
+                        className="w-full border-2 border-brand-ink bg-transparent px-4 py-2 font-mono text-sm text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-load"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block font-mono text-xs uppercase tracking-wider text-brand-ink/80 mb-2">
+                      DAILY ACTIVITY COEFFICIENT
+                    </label>
+                    <select
+                      value={activityLevel}
+                      onChange={(e) => setActivityLevel(e.target.value)}
+                      className="w-full border-2 border-brand-ink bg-transparent px-4 py-2 font-mono text-sm text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-load"
+                    >
+                      <option value="Sedentary">SEDENTARY (DESK JOB, NO EXERCISE)</option>
+                      <option value="Light">LIGHT (1-3 DAYS LIGHT EXERCISE/WEEK)</option>
+                      <option value="Moderate">MODERATE (3-5 DAYS ACTIVE EXERCISE/WEEK)</option>
+                      <option value="Active">ACTIVE (6-7 DAYS HEAVY TRAINING/WEEK)</option>
+                    </select>
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 2: GOALS & EXPERIENCES */}
+              {currentStep === 1 && (
+                <div className="space-y-6">
+                  <h2 className="font-mono text-sm uppercase tracking-wider border-b border-brand-ink/20 pb-2 text-brand-ink font-bold">
+                    02 // TARGET GOALS & EXPERIENCE PROFILE
+                  </h2>
+
+                  <div>
+                    <label className="block font-mono text-xs uppercase tracking-wider text-brand-ink/80 mb-2">
+                      PRIMARY FITNESS PATH
+                    </label>
+                    <select
+                      value={goal}
+                      onChange={(e) => setGoal(e.target.value)}
+                      className="w-full border-2 border-brand-ink bg-transparent px-4 py-2 font-mono text-sm text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-load"
+                    >
+                      <option value="Build Muscle">BUILD MUSCLE (LEAN SURPLUS)</option>
+                      <option value="Fat Loss">FAT LOSS (CALORIC DEFICIT)</option>
+                      <option value="Athletic Performance">ATHLETIC CONDITIONING</option>
+                      <option value="General Health">GENERAL WELLNESS & FITNESS</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block font-mono text-xs uppercase tracking-wider text-brand-ink/80 mb-2">
+                      TRAINING EXPERIENCE CLASS
+                    </label>
+                    <select
+                      value={fitnessLevel}
+                      onChange={(e) => setFitnessLevel(e.target.value)}
+                      className="w-full border-2 border-brand-ink bg-transparent px-4 py-2 font-mono text-sm text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-load"
+                    >
+                      <option value="Beginner">BEGINNER (0-1 YEARS STRUCTURED LIFTING)</option>
+                      <option value="Intermediate">INTERMEDIATE (1-3 YEARS LIFTING)</option>
+                      <option value="Advanced">ADVANCED (3+ YEARS HEAVY COMPOUND LIFTING)</option>
+                    </select>
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 3: SCHEDULE & EQUIPMENT */}
+              {currentStep === 2 && (
+                <div className="space-y-6">
+                  <h2 className="font-mono text-sm uppercase tracking-wider border-b border-brand-ink/20 pb-2 text-brand-ink font-bold">
+                    03 // AVAILABILITIES & EQUIPMENT LEDGER
+                  </h2>
+
+                  <div>
+                    <label className="block font-mono text-xs uppercase tracking-wider text-brand-ink/80 mb-2">
+                      AVAILABLE EQUIPMENT INVENTORY
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={equipment}
+                      onChange={(e) => setEquipment(e.target.value)}
+                      className="w-full border-2 border-brand-ink bg-transparent px-4 py-2 font-mono text-sm text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-load"
+                      placeholder="e.g. Barbell, Dumbbells, Bench, Pull-up Bar"
+                    />
+                    <p className="mt-1 text-xs text-brand-ink/65 font-sans">
+                      Separate items with commas. We only prescribe movements fitting this inventory.
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block font-mono text-xs uppercase tracking-wider text-brand-ink/80 mb-4">
+                      WEEKLY WORKOUT SCHEDULE CONSTRAINTS (CHOOSE DAYS)
+                    </label>
+                    <div className="grid grid-cols-7 gap-2">
+                      {["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"].map((day) => {
+                        const active = schedule.includes(day);
+                        return (
+                          <button
+                            key={day}
+                            type="button"
+                            onClick={() => handleScheduleChange(day)}
+                            className={`border-2 py-3 font-mono text-xs font-bold transition-all ${
+                              active
+                                ? "bg-brand-load border-brand-load text-brand-paper"
+                                : "border-brand-ink text-brand-ink bg-transparent hover:bg-brand-paper-dark"
+                            }`}
+                          >
+                            {day}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 4: DIET & INJURY HISTORY */}
+              {currentStep === 3 && (
+                <div className="space-y-6">
+                  <h2 className="font-mono text-sm uppercase tracking-wider border-b border-brand-ink/20 pb-2 text-brand-ink font-bold">
+                    04 // DIET PREFERENCES & MEDICAL HISTORY
+                  </h2>
+
+                  <div>
+                    <label className="block font-mono text-xs uppercase tracking-wider text-brand-ink/80 mb-2">
+                      DIETARY PREFERENCES / RESTRICTIONS
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={diet}
+                      onChange={(e) => setDiet(e.target.value)}
+                      className="w-full border-2 border-brand-ink bg-transparent px-4 py-2 font-mono text-sm text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-load"
+                      placeholder="e.g. Vegetarian, Gluten-Free, Dairy-Free, or None"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-mono text-xs uppercase tracking-wider text-brand-ink/80 mb-2">
+                      INJURIES / PHYSICAL PAIN CONSTRAINTS
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={injuries}
+                      onChange={(e) => setInjuries(e.target.value)}
+                      className="w-full border-2 border-brand-ink bg-transparent px-4 py-2 font-mono text-sm text-brand-ink focus:outline-none focus:ring-2 focus:ring-brand-load"
+                      placeholder="e.g. Lower back pain occasionally, or None"
+                    />
+                    <p className="mt-1 text-xs text-brand-ink/65 font-sans">
+                      AuraCoach will avoid exercises that trigger pain in these areas.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Controls */}
+              <div className="flex justify-between pt-6 border-t border-brand-ink/20">
+                {currentStep > 0 ? (
+                  <button
+                    type="button"
+                    onClick={handleBack}
+                    className="border-2 border-brand-ink px-6 py-2.5 font-mono text-xs uppercase tracking-wider text-brand-ink bg-transparent hover:bg-brand-paper-dark transition-all"
+                  >
+                    BACK
+                  </button>
+                ) : (
+                  <div></div>
+                )}
+
+                {currentStep < STEPS.length - 1 ? (
+                  <button
+                    type="button"
+                    onClick={handleNext}
+                    className="border-2 border-brand-ink bg-brand-ink px-6 py-2.5 font-mono text-xs uppercase tracking-wider text-brand-paper hover:bg-brand-load hover:border-brand-load transition-all"
+                  >
+                    CONTINUE
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    className="border-2 border-brand-ink bg-brand-ink px-6 py-2.5 font-mono text-xs uppercase tracking-wider text-brand-paper hover:bg-brand-load hover:border-brand-load transition-all font-bold"
+                  >
+                    GENERATE SYSTEM PLAN
+                  </button>
+                )}
+              </div>
+            </form>
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}
