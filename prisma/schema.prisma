@@ -1,0 +1,103 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id               String            @id @default(cuid())
+  email            String            @unique
+  password         String // Hashed password
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  profile          Profile?
+  workoutPlans     WorkoutPlan[]
+  mealPlans        MealPlan[]
+  checkIns         CheckIn[]
+  adaptationEvents AdaptationEvent[]
+}
+
+model Profile {
+  id                 String   @id @default(cuid())
+  userId             String   @unique
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goal               String // e.g. "Build Muscle", "Fat Loss", "Athletic Performance", "General Health"
+  fitnessLevel       String // e.g. "Beginner", "Intermediate", "Advanced"
+  dietaryRestrictions String // Comma-separated or JSON list
+  injuryHistory      String // Free text or comma-separated
+  availableEquipment String // Comma-separated or JSON list
+  weeklySchedule     String // JSON list of available days, e.g. ["MON", "WED", "FRI"]
+  weight             Float? // in kg
+  height             Float? // in cm
+  age                Int?
+  gender             String?
+  activityLevel      String? // e.g. "Sedentary", "Light", "Moderate", "Active"
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model WorkoutPlan {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  weekNumber    Int
+  status        String // "ACTIVE" or "SUPERSEDED"
+  exercisesJson String // Structured JSON containing exercises, sets, reps, load, rest, etc.
+  rationale     String? // AI-generated reasoning for the plan/overloads
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model MealPlan {
+  id               String   @id @default(cuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  weekNumber       Int
+  status           String // "ACTIVE" or "SUPERSEDED"
+  mealsJson        String // Structured JSON containing 7 days of meals
+  macroProtein     Float // daily target protein in grams
+  macroCarbs       Float // daily target carbs in grams
+  macroFat         Float // daily target fat in grams
+  macroCalories    Float // daily target calories
+  shoppingListJson String // Structured JSON containing grocery items by category
+  rationale        String? // AI-generated nutrition rationale
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model CheckIn {
+  id                      String            @id @default(cuid())
+  userId                  String
+  user                    User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date                    String // YYYY-MM-DD representation
+  workoutCompleted        Boolean
+  workoutPerformanceJson  String? // JSON storing sets completed, weight/reps achieved
+  mealsLoggedJson         String? // JSON storing macros or compliance status
+  sorenessPainLocation    String? // e.g., "Knee", "Shoulder"
+  sorenessPainSeverity    Int? // Scale 0-10
+  sorenessPainDescription String? // Free text description of physical pain/strain
+  energyLevel             Int? // Scale 1-10
+  mood                    String? // e.g., "Good", "Tired", "Stressed"
+  sleepHours              Float?
+  createdAt               DateTime          @default(now())
+  updatedAt               DateTime          @updatedAt
+  adaptationEvents        AdaptationEvent[]
+
+  @@unique([userId, date])
+}
+
+model AdaptationEvent {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  checkInId      String?
+  checkIn        CheckIn? @relation(fields: [checkInId], references: [id], onDelete: Cascade)
+  classification String // "BAD_DAY" | "PLATEAU" | "INJURY" | "LOW_ADHERENCE" | "PROGRESSION"
+  rationale      String // Plain text reason
+  prePlanId      String? // ID of superseded WorkoutPlan
+  postPlanId     String? // ID of newly generated WorkoutPlan
+  createdAt      DateTime @default(now())
+}
